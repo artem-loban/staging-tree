@@ -209,12 +209,6 @@ const setProfilePhoto = async ({
   setMembers,
   setCurMember,
 }) => {
-  console.log({
-    photo,
-    curDyn,
-    memberId,
-    setMembers,
-  })
   try {
     const memberRef = doc(db, 'members', memberId);
     await updateDoc(memberRef, {
@@ -223,6 +217,57 @@ const setProfilePhoto = async ({
       await getMembersByDyn(curDyn, setMembers);
       await getMemberById(memberId, setCurMember);
     })
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+const addPhotoToGallery = async ({
+  photo,
+  curDyn,
+  memberId,
+  setMembers,
+  setCurMember,
+}) => {
+  try {
+    const memberRef = doc(db, 'members', memberId);
+    const memberSnap = await getDoc(memberRef);
+    const member = memberSnap.data();
+    const gallery = [
+      ...(member.gallery || []),
+      photo
+    ];
+    await updateDoc(memberRef, {
+      gallery
+    }).then(async () => {
+      await getMembersByDyn(curDyn, setMembers);
+      await getMemberById(memberId, setCurMember);
+    })
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+const removePhotoFromGallery = async ({
+  index,
+  curDyn,
+  memberId,
+  setMembers,
+  setCurMember,
+}) => {
+  try {
+    const memberRef = doc(db, 'members', memberId);
+    const memberSnap = await getDoc(memberRef);
+    const member = memberSnap.data();
+    const gallery = [...member.gallery];
+    gallery.splice(index, 1);
+    await updateDoc(memberRef, {
+      gallery
+    }).then(async () => {
+      await getMembersByDyn(curDyn, setMembers);
+      await getMemberById(memberId, setCurMember);
+    })
+    return gallery;
   } catch (err) {
     console.log(err);
   }
@@ -274,7 +319,6 @@ const createNewDynForMember = async ({
     root: member,
     branch: members
   })
-  console.log("🚀 ~ file: index.js:264 ~ allMembersIdToUpdate", allMembersIdToUpdate)
   const { id: dynId } = await addDoc(collection(db, 'dynasties'), {
     dynastyName
   });
@@ -314,5 +358,7 @@ export {
   editMemberById,
   getMembersByDyn,
   setProfilePhoto,
+  addPhotoToGallery,
   createNewDynForMember,
+  removePhotoFromGallery,
 };

@@ -1,9 +1,10 @@
 import * as Yup from 'yup';
 import { isEmpty } from 'ramda';
 import React, { useState } from 'react';
+import { EditMember } from '../createMember';
 import { createNewDynForMember, setProfilePhoto } from '../../functions/firestore';
 import { Box, Button, Flex, Form, IconWithText, ListItem, Loader, Text, Title, UploadImage } from 'exsportia-components';
-import { EditMember } from '../createMember';
+import ProfileGallery from './components/gallery';
 
 const CreateDynForm = ({
   member,
@@ -173,7 +174,7 @@ const ProfileModal = ({
     <Box pb={['48px', '20px']}>
       <Title text={`${curMember.surname} ${curMember.name} ${curMember.fathersName}`} />
       <Flex mb='16px' mr='16px' justifyContent='space-around' p='20px' borderRadius='16px' border='1px solid'>
-        <Flex flexDirection='column' alignItems='center' mr='16px' justifyContent='center'>
+        <Flex flexDirection='column' mr='16px' justifyContent='center'>
           <Flex justifyContent='center'>
             {
               !!photo
@@ -195,11 +196,11 @@ const ProfileModal = ({
                 </Flex>
             }
           </Flex>
-          <Flex justifyContent='center' mt='48px' mb='16px'>
+          <Flex justifyContent='center' mt='36px' mb='16px'>
             <UploadImage
               icon=''
               disabled={guestMode}
-              label={!!photo ? 'Замінити фото' : 'Додати фото'}
+              label={!!photo ? 'Замінити фото профіля' : 'Додати фото профіля'}
               settings={{
                 cropSize: {
                   width: 200,
@@ -217,13 +218,13 @@ const ProfileModal = ({
           {!!photo && <Flex justifyContent='center'>
             <Button
               icon=''
-              styleType='link'
+              styleType='secondary'
               disabled={guestMode}
-              text='Видалити фото'
+              text='Видалити фото профіля'
               onClick={() => {
                 openModal({
                   footerConfig: {
-                    disabled: 'true',
+                    disabled: true,
                   },
                   headerConfig: {
                     disabled: true,
@@ -232,21 +233,45 @@ const ProfileModal = ({
                     <ConfirmationModal
                       closeModal={closeModal}
                       onSubmit={() => {
-                        console.log('delete')
-                        // setProfilePhoto({
-                        //   curDyn,
-                        //   photo: '',
-                        //   setMembers,
-                        //   setCurMember,
-                        //   memberId: curMember.id,
-                        // })
+                        setProfilePhoto({
+                          curDyn,
+                          photo: '',
+                          setMembers,
+                          setCurMember,
+                          memberId: curMember.id,
+                        })
                       }} />),
                 })
               }}
               settings={{
-                color: 'red'
+                color: 'red',
+                width: '100%'
               }} />
           </Flex>}
+          <Button
+            styleType='secondary'
+            settings={{ m: '32px 0 0 0', width: '100%' }}
+            onClick={() => openModal({
+              footerConfig: {
+                disabled: true,
+              },
+              headerConfig: {
+                disabled: true,
+              },
+              component: (
+                <ProfileGallery
+                  curDyn={curDyn}
+                  memberId={member.id}
+                  guestMode={guestMode}
+                  openModal={openModal}
+                  setMembers={setMembers}
+                  gallery={curMember.gallery}
+                  setCurMember={setCurMember} />
+              )
+            })}
+          >
+            Галерея
+          </Button>
         </Flex>
         <Box pb='24px' flexDirection='column'>
           {

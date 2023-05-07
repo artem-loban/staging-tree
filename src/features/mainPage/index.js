@@ -350,6 +350,7 @@ const Tree = () => {
           document.location.reload()
         }} />
       <Flex mt='120px' flexDirection='column' justifyContent='center' alignItems='center'>
+        <Text settings={{ color: 'red', fontSize: '48px', lineHeight: '48px' }}>ЦЕ ТЕСТОВЕ СЕРЕДОВИЩЕ!!!</Text>
         Оберіть рід
         <Flex mt='16px' flexDirection='column' alignItems='center' borderRadius='16px' border='1px solid'>
           {
