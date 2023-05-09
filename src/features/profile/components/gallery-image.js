@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Button, Flex } from 'exsportia-components';
+import React, { useContext, useState } from 'react';
+import { Button, Flex, ModalContext } from 'exsportia-components';
 import { removePhotoFromGallery } from '../../../functions/firestore';
 
 const GalleryImage = ({
@@ -12,6 +12,7 @@ const GalleryImage = ({
   setGalleryToUse,
 }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(currentIndex);
+  const { closeModal } = useContext(ModalContext);
   const turnRight = () => {
     if (currentImageIndex === allImages.length - 1) {
       return setCurrentImageIndex(0)
@@ -51,8 +52,14 @@ const GalleryImage = ({
             setCurMember,
             index: currentImageIndex
           });
-          setGalleryToUse(allImages.splice(currentIndex, 1));
-          turnLeft();
+          setGalleryToUse([...allImages].reduce(
+            (acc, cur) => {
+              if (cur === allImages[currentImageIndex]) return acc;
+              return [...acc, cur];
+            },
+            []
+          ));
+          closeModal()
         }} />
     </Flex>
   )
